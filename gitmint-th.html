@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>gittisak-go — SPA</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 2rem; }
+    nav a { margin-right: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>gittisak-go — Single Page</h1>
+  <nav>
+    <a href="/" data-link>Home</a>
+    <a href="/about" data-link>About</a>
+    <a href="/contact" data-link>Contact</a>
+  </nav>
+
+  <main id="view" style="margin-top:1rem"></main>
+
+  <script>
+    // If page was redirected from 404.html and original path encoded in hash
+    (function(){
+      try {
+        if(location.hash && location.hash.startsWith('#')){
+          const h = decodeURIComponent(location.hash.slice(1));
+          // if hash encodes original pathname like /about, replace history
+          if(h && h.startsWith('/')){
+            history.replaceState(null, null, h);
+          }
+        }
+      } catch(e){}
+    })();
+
+    const routes = {
+      '/': () => document.getElementById('view').innerHTML = '<p>หน้าแรก</p>',
+      '/about': () => document.getElementById('view').innerHTML = '<p>เกี่ยวกับเรา</p>',
+      '/contact': () => document.getElementById('view').innerHTML = '<p>ติดต่อเรา</p>'
+    };
+
+    function router() {
+      const path = window.location.pathname;
+      (routes[path] || (() => document.getElementById('view').innerHTML = '<p>ไม่พบหน้า</p>'))();
+    }
+
+    function navigateTo(url) {
+      history.pushState(null, null, url);
+      router();
+    }
+
+    window.addEventListener('popstate', router);
+
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[data-link]');
+      if (a) {
+        e.preventDefault();
+        navigateTo(new URL(a.href).pathname);
+      }
+    });
+
+    router();
+  </script>
+</body>
+</html>
